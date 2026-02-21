@@ -1,0 +1,41 @@
+type JWT = {
+  header: any;
+  body: any;
+};
+
+function base64Url(str: string) {
+  return btoa(str)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
+}
+
+function fakeSign(data: string, secret: string) {
+  return base64Url(data + secret); //Cript SHA256
+}
+
+const json: JWT = {
+  header: {
+    alg: "HS256",
+    typ: "JWT",
+  },
+  body: {
+    id: "teste",
+  },
+};
+
+const key = "secret";
+
+const headerStr = JSON.stringify(json.header);
+const bodyStr = JSON.stringify(json.body);
+
+const header64 = base64Url(headerStr);
+const body64 = base64Url(bodyStr);
+
+const data = `${header64}.${body64}`;
+
+const signature = fakeSign(data, key);
+
+const jwtFinal = `${data}.${signature}`;
+
+console.log(jwtFinal);
